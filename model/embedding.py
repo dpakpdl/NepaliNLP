@@ -1,17 +1,24 @@
 # -*- coding: utf-8 -*-
-import get_tagset
+import os
+import sys
+
 import numpy as np
-from pre_processing.get_sentences import SentenceGetter
-from pre_processing.get_words import WordTagGetter
-from pre_processing.get_characters import CharacterGetter
-from pre_processing.pre_process import get_char2idx_sentences
-from keras.preprocessing.sequence import pad_sequences
+from keras.layers import Bidirectional, concatenate, SpatialDropout1D
+from keras.layers import LSTM, Embedding, Dense, TimeDistributed
 from keras.models import Model, Input
-from keras.layers import LSTM, Embedding, Dense, TimeDistributed, Dropout, Conv1D
-from keras.layers import Bidirectional, concatenate, SpatialDropout1D, GlobalMaxPooling1D
+from keras.preprocessing.sequence import pad_sequences
 from sklearn.model_selection import train_test_split
 
-data = get_tagset.read()
+THIS_DIR = os.path.abspath(os.path.dirname(__file__))
+sys.path.append(os.path.dirname(THIS_DIR))
+
+from pre_processing.get_tagset import read
+from pre_processing.get_characters import CharacterGetter
+from pre_processing.get_sentences import SentenceGetter
+from pre_processing.get_words import WordTagGetter
+from pre_processing.pre_process import get_char2idx_sentences
+
+data = read()
 sentence_getter = SentenceGetter(data)
 sentences = sentence_getter.sentences
 
@@ -61,11 +68,11 @@ print(emb_word)
 
 # input and embeddings for characters
 char_in = Input(shape=(max_len, max_len_char,))
-emb_char = TimeDistributed(Embedding(input_dim=n_chars + 2, output_dim=10, input_length=max_len_char, mask_zero=True))(char_in)
+emb_char = TimeDistributed(Embedding(input_dim=n_chars + 2, output_dim=10, input_length=max_len_char, mask_zero=True))(
+    char_in)
 
 # character LSTM to get word encodings by characters
 char_enc = TimeDistributed(LSTM(units=20, return_sequences=False, recurrent_dropout=0.5))(emb_char)
-
 
 # main LSTM
 x = concatenate([emb_word, char_enc])
@@ -87,7 +94,6 @@ history = model.fit([X_word_tr, np.array(X_char_tr).reshape((len(X_char_tr), max
                     batch_size=32, epochs=10, validation_split=0.1, verbose=1)
 print(history)
 y_pred = model.predict([X_word_te, np.array(X_char_te).reshape((len(X_char_te), max_len, max_len_char))])
-
 
 i = 1925
 print(len(y_pred))
