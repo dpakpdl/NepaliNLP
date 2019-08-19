@@ -7,9 +7,9 @@ import io
 # words = model.most_similar(positive=[], negative=[], topn=10)
 from gensim.models.wrappers import FastText
 
-model = FastText.load_fasttext_format('word2vec/cc.ne.300.bin')
+my_model = FastText.load_fasttext_format('word2vec/cc.ne.300.bin')
 
-print(model.most_similar(positive=['थोपा'], negative=[], topn=10))
+print(my_model.most_similar(positive=['थोपा'], negative=[], topn=10))
 
 
 # print(model.similarity('teacher', 'teaches'))
