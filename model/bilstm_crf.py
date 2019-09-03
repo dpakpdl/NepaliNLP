@@ -13,10 +13,10 @@ THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(THIS_DIR)
 
 from callbacks import LossHistory
-from keras_model import BaseKerasModel
+from base_model import BaseModel
 
 
-class BLSTMCRF(BaseKerasModel):
+class BLSTMCRF(BaseModel):
 
     def __init__(self, config):
         super(BLSTMCRF, self).__init__(config)
@@ -33,12 +33,12 @@ class BLSTMCRF(BaseKerasModel):
         input_words = Input(shape=(None,), dtype='int32', name='word_ids')
         inputs.append(input_words)
         if self.config.embeddings is None:
-            word_embeddings = Embedding(input_dim=self.config.number_of_words + 1,
+            word_embeddings = Embedding(input_dim=self.config.number_of_words,
                                         output_dim=self.config.dim_word,
                                         mask_zero=True,
                                         name="word_embeddings")(input_words)
         else:
-            word_embeddings = Embedding(input_dim=self.config.number_of_words + 1,
+            word_embeddings = Embedding(input_dim=self.config.number_of_words,
                                         output_dim=self.config.dim_word,
                                         mask_zero=True,
                                         weights=[self.config.embeddings],
@@ -49,7 +49,7 @@ class BLSTMCRF(BaseKerasModel):
         if self.config.use_chars:
             input_chars = Input(batch_shape=(None, None, None), dtype='int32', name='char_ids')
             inputs.append(input_chars)
-            char_embeddings = Embedding(input_dim=self.config.number_of_chars + 1,
+            char_embeddings = Embedding(input_dim=self.config.number_of_chars,
                                         output_dim=self.config.dim_char,
                                         mask_zero=True,
                                         name='char_embeddings')(input_chars)
@@ -87,7 +87,7 @@ class BLSTMCRF(BaseKerasModel):
 
         else:
             self._loss = 'categorical_crossentropy'
-            pred = Dense(self.config.number_of_tags + 1, activation='softmax')(encoded_text)
+            pred = Dense(self.config.number_of_tags, activation='softmax')(encoded_text)
 
         self.model = Model(inputs, pred)
 
