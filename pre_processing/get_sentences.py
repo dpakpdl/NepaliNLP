@@ -8,11 +8,17 @@ class SentenceGetter(object):
         self.data = data
         self.empty = False
         self.grouped = self.data.groupby("sentence").apply(self.aggregate)
-        self.sentences = [s for s in self.grouped]
+        self.grouped_words = self.data.groupby("sentence").apply(self.aggregate_words)
+        self.tagged_sentences = [s for s in self.grouped]
+        self.sentences = [s for s in self.grouped_words]
 
     @staticmethod
     def aggregate(s):
         return [(word, pos) for word, pos in zip(s["word"].values.tolist(), s["pos"].values.tolist())]
+
+    @staticmethod
+    def aggregate_words(s):
+        return [word for word in s["word"].values.tolist()]
 
     def get_next(self):
         try:
@@ -29,7 +35,7 @@ def main():
     data = data.fillna(method="ffill")
     print(data.tail(10))
     getter = SentenceGetter(data)
-    print(getter.sentences)
+    print(getter.tagged_sentences)
 
 
 if __name__ == "__main__":
