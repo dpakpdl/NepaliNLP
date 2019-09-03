@@ -37,5 +37,6 @@ def get_testing_data_path():
 def get_results_path():
     return os.path.join(os.path.dirname(THIS_DIR), 'results')
 
+
 def get_saved_model_path():
     return os.path.join(os.path.dirname(THIS_DIR), 'model', 'saves')
