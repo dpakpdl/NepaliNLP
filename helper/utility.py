@@ -40,3 +40,8 @@ def get_results_path():
 
 def get_saved_model_path():
     return os.path.join(os.path.dirname(THIS_DIR), 'model', 'saves')
+
+
+def get_merged_data_path():
+    data_path = get_data_path()
+    return os.path.join(data_path, "UrduNepaliEnglish", "merged.csv")
