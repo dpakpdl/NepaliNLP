@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
+import time
 import warnings
 
 from keras.utils import plot_model
@@ -23,7 +24,7 @@ def main():
     # build model
     model = BLSTMCRF(config)
     model.build()
-    model.compile(optimizer=model.get_optimizer(), loss=model.get_loss())  # metrics = ['acc']
+    model.compile(optimizer=model.get_optimizer(), loss=model.get_loss(), metrics=model.get_metrics())
     print("Number of Tags: {0}".format(config.number_of_tags))
     print("Number of Characters: {0}".format(config.number_of_chars))
     print("Number of Words: {0}".format(config.number_of_words))
@@ -44,12 +45,14 @@ def main():
     print('validate={}'.format(sum(1 for x in data.validate)))
     model.summary()
     # train model
+    start_time = time.time()
     history = model.train(data.train, data.validate)
-
+    end_time = time.time()
+    print("time taken to train: {0}".format(end_time - start_time))
     print(plot_model(model, to_file='./saves/model.png'))
 
     # Save model
-    # model.model.save_weights('./saves/model_no_crf_no_char_20e_lr_0.001_new.h5')
+    # model.model.save_weights('./saves/model_no_crf_20e_lr_0.001_new_presentation_day.h5')
     model.plot_history(history)
     # test predictions
 
