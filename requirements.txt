@@ -1,0 +1,13 @@
+nltk
+numpy
+pandas
+keras
+keras_contrib
+tensorflow
+sklearn
+gensim
+tqdm
+pomegranate
+pygraphviz
+matplotlib
+bayesian-optimization

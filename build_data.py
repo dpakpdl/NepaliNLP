@@ -10,7 +10,7 @@ def main():
     dev and test) and extract the vocabularies in terms of words, tags, and
     characters. Having built the vocabularies it writes them in a file. The
     writing of vocabulary in a file assigns an id (the line #) to each word.
-    It then extract the relevant GloVe vectors and stores them in a np array
+    It then extract the relevant GloVe/FastText vectors and stores them in a np array
     such that the i-th entry corresponds to the i-th word in the vocabulary.
 
     config: (instance of Config) has attributes like hyper-params...
