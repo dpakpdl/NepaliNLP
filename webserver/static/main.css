@@ -20,7 +20,7 @@
 
 #chart div {
   height: 30px;
-  font: 15px;
+  font-size: 15px;
   background-color: #006dcc;
   text-align: right;
   padding: 3px;
