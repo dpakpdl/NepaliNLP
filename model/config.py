@@ -80,9 +80,9 @@ class Config(object):
 
     filename_test = utility.get_testing_data_path()
     filename_train = utility.get_training_data_path()
-
-    max_iter = 50  # if not None, max number of examples in Dataset
-
+    # filename_train = utility.get_merged_data_path()
+    max_iter = None  # if not None, max number of examples in Dataset
+    # max_iter = 80  # if not None, max number of examples in Dataset
     # vocab (created from dataset with build_data.py)
     filename_words = utility.get_word_vocab_path()
     filename_tags = utility.get_tag_vocab_path()
@@ -90,14 +90,14 @@ class Config(object):
 
     # training
     train_embeddings = False
-    nepochs = 1
+    nepochs = 30
     dropout = 0.5
     batch_size = 20
     lr_method = "adam"
     lr = 0.001
     lr_decay = 0.90
     epoch_drop = 2  # Step Decay: per # epochs to apply lr_decay
-    clip = 5  # if negative, no clipping
+    clip = -1  # if negative, no clipping
     nepoch_no_imprv = 5  # number of epoch with no improvement, used for EarlyStopping
 
     # model hyperparameters
