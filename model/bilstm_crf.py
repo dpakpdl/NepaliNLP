@@ -1,13 +1,15 @@
+import math
 import os
 import sys
-import math
-from keras.layers import Input, Bidirectional, LSTM, Embedding, Dense, Dropout, Lambda, Concatenate
-from keras.models import Model
+
 import keras.backend as K
-from keras_contrib.layers import CRF
+import matplotlib.pyplot as plt
 from keras import optimizers
 from keras.callbacks import LearningRateScheduler, EarlyStopping
-import matplotlib.pyplot as plt
+from keras.layers import Input, Bidirectional, LSTM, Embedding, Dense, Dropout, Lambda, Concatenate
+from keras.models import Model
+from keras_contrib.layers import CRF
+from keras_contrib.metrics import crf_accuracy
 
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(THIS_DIR)
@@ -20,6 +22,7 @@ class BLSTMCRF(BaseModel):
 
     def __init__(self, config):
         super(BLSTMCRF, self).__init__(config)
+        self._metrics = ["acc"]
         self._loss = None  # losses.sparse_categorical_crossentropy
         self._optimizer = optimizers.Adam(lr=self.config.lr)
         # self._optimizer = optimizers.SGD(lr=self.config.lr, momentum=0.9, decay=0.05, clipvalue=self.config.clip)
@@ -81,8 +84,9 @@ class BLSTMCRF(BaseModel):
             # spare_target = False uses categorical_crossentropy
             # this loss function is used for one hot encoded targets; see to_categorical
             # otherwise sparse_categorical_crossentropy is used as loss function
-            crf = CRF(self.config.number_of_tags + 1, sparse_target=False)
+            crf = CRF(self.config.number_of_tags, sparse_target=False)
             self._loss = crf.loss_function
+            self._metrics = [crf_accuracy]
             pred = crf(encoded_text)
 
         else:
@@ -104,20 +108,32 @@ class BLSTMCRF(BaseModel):
         return callbacks_list
 
     def step_decay(self, epoch):
-        initial_lrate = self.config.lr
+        initial_lr = self.config.lr
         decay = self.config.lr_decay
         epochs_drop = self.config.epoch_drop
-        lrate = initial_lrate * math.pow(decay, math.floor((1 + epoch) / epochs_drop))
-        return lrate
+        # lrate = initial_lrate * math.pow(decay, math.floor((1 + epoch) / epochs_drop))
+        return initial_lr * math.pow(decay, math.floor(epoch / epochs_drop))
 
-    def plot_history(self, history):
-        print(history.history.keys())
+    @staticmethod
+    def plot_history(history):
+        fig, (ax1, ax2) = plt.subplots(1, 2)
+
         # summarize history for loss
-        plt.plot(history.history['loss'])
-        plt.plot(history.history['val_loss'])
-        plt.title('model loss')
-        plt.ylabel('loss')
-        plt.xlabel('epoch')
-        plt.legend(['train', 'validate'], loc='upper left')
+        ax1.plot(history.history['loss'], label="train")
+        ax1.plot(history.history['val_loss'], label="validate")
+        ax1.set_title("model loss")
+        ax1.set_ylabel('loss')
+        ax1.set_xlabel('epoch')
+        ax1.legend(loc='upper left')
+
+        # summarize history for accuracy
+        ax2.plot(history.history['crf_accuracy'], label="train")
+        ax2.plot(history.history['val_crf_accuracy'], label="validate")
+        ax2.set_title('model accuracy')
+        ax2.set_ylabel('accuracy')
+        ax2.set_xlabel('epoch')
+        ax2.legend(loc='upper left')
         plt.show()
 
+    def get_metrics(self):
+        return self._metrics
