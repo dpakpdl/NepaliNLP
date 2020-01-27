@@ -2,7 +2,7 @@ nltk
 numpy
 pandas
 keras
-keras_contrib
+git+https://www.github.com/keras-team/keras-contrib.git
 tensorflow
 sklearn
 gensim
