@@ -10,3 +10,5 @@ tqdm
 pomegranate
 matplotlib
 bayesian-optimization
+redis
+rq
