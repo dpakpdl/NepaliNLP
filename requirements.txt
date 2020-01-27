@@ -8,6 +8,5 @@ sklearn
 gensim
 tqdm
 pomegranate
-git+git://github.com/pygraphviz/pygraphviz.git
 matplotlib
 bayesian-optimization
