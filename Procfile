@@ -1,2 +1,2 @@
 worker: python ./webserver/worker.py
-web: ./webserver/run.sh
+web: gunicorn --bind 0.0.0.0:$PORT --log-level=debug --chdir ./webserver app:app --daemon
